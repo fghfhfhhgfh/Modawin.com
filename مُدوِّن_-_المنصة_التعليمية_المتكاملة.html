@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مُدوِّن | المنصة الأولى لطلاب القدرات والتحصيلي وSTEP</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons & Cairo Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #020617;
+            --bg-card: rgba(15, 23, 42, 0.88);
+            --bg-card-solid: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-main: rgba(255, 255, 255, 0.12);
+            --input-bg: #0f172a;
+            --header-bg: rgba(15, 23, 42, 0.92);
+        }
+
+        html.light {
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-card-solid: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-main: rgba(0, 0, 0, 0.12);
+            --input-bg: #ffffff;
+            --header-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            user-select: none;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-main);
+        }
+
+        .input-themed {
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-main);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.25); }
+        }
+        .live-dot {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes float-rocket {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float-rocket 3s ease-in-out infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 999px;
+        }
+
+        .canvas-grid-bg {
+            background-size: 24px 24px;
+            background-image: radial-gradient(circle, rgba(148, 163, 184, 0.2) 1.5px, transparent 1.5px);
+        }
+
+        /* iPad and Touch Canvas Optimizations */
+        canvas#whiteboardCanvas {
+            touch-action: none !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-5 left-5 z-50 flex flex-col gap-3 max-w-sm pointer-events-none"></div>
+
+    <!-- MAIN HEADER BAR -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-md border-b transition-colors duration-300" style="background-color: var(--header-bg); border-color: var(--border-main);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="handleLogoClick()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-black text-xl">
+                    م
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 via-indigo-500 to-emerald-500 bg-clip-text text-transparent">مُدوِّن</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full">29.99 ر.س</span>
+                    </div>
+                    <p class="text-[10px] opacity-70 -mt-1 hidden sm:block">دفترك الذكي والمذاكرة الجماعية حول العالم 🌐</p>
+                </div>
+            </div>
+
+            <!-- Dynamic Header Actions -->
+            <div class="flex items-center gap-3" id="headerActions"></div>
+
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+        <!-- ================= VIEW 1: LANDING PAGE (للزوار) ================= -->
+        <div id="landingView" class="space-y-12 py-4">
+            
+            <!-- Hero Section -->
+            <div class="relative rounded-3xl bg-gradient-to-b from-brand-950/30 via-slate-900/10 to-slate-900/30 border p-8 sm:p-12 text-center overflow-hidden shadow-2xl" style="border-color: var(--border-main);">
+                <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 max-w-3xl mx-auto space-y-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 live-dot"></span>
+                        <span>مُصمم خصيصاً لطلاب القدرات والتحصيلي وSTEP 🇸🇦</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-5xl font-black leading-tight">
+                        ودّع التسويف نهائياً.. <br>
+                        <span class="bg-gradient-to-r from-brand-500 via-emerald-500 to-teal-400 bg-clip-text text-transparent">وذاكر مع شريك عشوائي حول العالم! 🌐</span>
+                    </h1>
+
+                    <p class="text-xs sm:text-base leading-relaxed opacity-80">
+                        احصل على دفتر الأخطاء الذكي، السبورة الشاملة مع رفع ورسم الصور والمستندات، العد التنازلي التفاعلي، وجداول المذاكرة. كل هذا باشتراك رمزي <strong class="text-emerald-500 font-extrabold">29.99 ريال سعودي فقط!</strong>
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                        <button onclick="openRegisterModal()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/25 transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-crown text-base"></i>
+                            <span>انضم للمنصة الآن (29.99 ر.س)</span>
+                        </button>
+                        <button onclick="openLoginModal()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket text-brand-400"></i>
+                            <span>تسجيل الدخول</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-earth-americas"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">شريك المذاكرة العالمي 🌍</h3>
+                    <p class="text-xs opacity-75 leading-relaxed">
+                        طابق مع طالب عشوائي يذاكر معك نفس الوقت عبر الكرة الأرضية التفاعلية مع خط ربط مضيء من السعودية!
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-chalkboard"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">السبورة الذكية ومحلل الملفات 🎨</h3>
+                    <p class="text-xs opacity-75 leading-relaxed">
+                        افتح سبورة واسعة، ارفع صور الأسئلة والمستندات واكتب واشرح عليها بقلم الآيباد واللمس بدقة فائقة.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">دفتر الأخطاء وجداول المذاكرة 📚</h3>
+                    <p class="text-xs opacity-75 leading-relaxed">
+                        سجل أسئلتك الخاطئة لعدم تكرارها، واستخدم مولد الجداول ومؤقت 5 دقائق للقضاء على التأجيل.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 2: STUDENT WORKSPACE ================= -->
+        <div id="studentDashboardView" class="hidden space-y-8">
+            
+            <!-- Student Header Banner -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-4">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span id="studentBannerStatus">حساب مفعل 👑 (29.99 ر.س)</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-black">
+                            أهلاً بك يا <span id="studentHeaderName" class="text-brand-500">طالب</span> 👋
+                        </h1>
+                        <p class="text-xs sm:text-sm opacity-80">
+                            المسار المستهدف: <strong class="text-amber-500" id="studentHeaderTrack">القدرات العامة</strong> | اختر القسم المطلوب:
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Main Navigation Tabs -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+                    <button onclick="switchStudentTab('world')" id="tabBtnWorld" class="p-3.5 rounded-2xl text-xs font-bold bg-brand-600 text-white flex flex-col items-center justify-center gap-2 transition shadow-lg">
+                        <i class="fa-solid fa-earth-americas text-lg"></i>
+                        <span>شريك المذاكرة 🌐</span>
+                    </button>
+                    <button onclick="switchStudentTab('countdown')" id="tabBtnCountdown" class="p-3.5 rounded-2xl text-xs font-bold glass-card opacity-80 hover:opacity-100 flex flex-col items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-hourglass-half text-lg text-amber-500"></i>
+                        <span>العد التنازلي ⏳</span>
+                    </button>
+                    <button onclick="switchStudentTab('whiteboard')" id="tabBtnWhiteboard" class="p-3.5 rounded-2xl text-xs font-bold glass-card opacity-80 hover:opacity-100 flex flex-col items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-chalkboard text-lg text-sky-500"></i>
+                        <span>السبورة والملفات 🎨</span>
+                    </button>
+                    <button onclick="switchStudentTab('notebook')" id="tabBtnNotebook" class="p-3.5 rounded-2xl text-xs font-bold glass-card opacity-80 hover:opacity-100 flex flex-col items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-book-bookmark text-lg text-emerald-500"></i>
+                        <span>دفتر الأخطاء 📚</span>
+                    </button>
+                    <button onclick="switchStudentTab('planner')" id="tabBtnPlanner" class="p-3.5 rounded-2xl text-xs font-bold glass-card opacity-80 hover:opacity-100 flex flex-col items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-calendar-days text-lg text-indigo-500"></i>
+                        <span>جداول المذاكرة 📅</span>
+                    </button>
+                    <button onclick="switchStudentTab('focus')" id="tabBtnFocus" class="p-3.5 rounded-2xl text-xs font-bold glass-card opacity-80 hover:opacity-100 flex flex-col items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-bolt text-lg text-rose-500"></i>
+                        <span>كسر التسويف ⚡</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= TAB 1: WORLD MATCH (الكرة الأرضية وشريك المذاكرة) ================= -->
+            <div id="tabContentWorld" class="space-y-6">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden flex flex-col items-center justify-center space-y-6">
+                    
+                    <div class="text-center space-y-1">
+                        <h2 class="text-xl font-black flex items-center justify-center gap-2">
+                            <span>المذاكرة التفاعلية حول العالم</span>
+                            <span class="text-sm px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-bold">مباشر 🔴</span>
+                        </h2>
+                        <p class="text-xs opacity-75">انقر أو اسحب الكرة الأرضية لمطابقة طالب يذاكر حالياً وربطهما بخط مضيء 🌐</p>
+                    </div>
+
+                    <!-- Live Count Pill -->
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 text-emerald-400 text-xs font-bold border border-slate-700 shadow-md">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 live-dot"></span>
+                        <span id="globeLiveCount">35,079</span>
+                        <span>طالب نشط الآن حول العالم</span>
+                    </div>
+
+                    <!-- Pure HTML5 Canvas 3D Globe Container (Fixed Black Screen Issue Completely) -->
+                    <div class="relative w-full max-w-lg h-80 sm:h-96 rounded-3xl flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing shadow-2xl bg-slate-950 border" style="border-color: var(--border-main);" id="globeCanvasContainer">
+                        <canvas id="pureGlobeCanvas" class="w-full h-full block"></canvas>
+                        
+                        <div id="globeSpinOverlay" class="absolute bottom-6 bg-slate-900/95 backdrop-blur-md px-6 py-2.5 rounded-2xl border border-slate-700 text-xs font-bold text-amber-400 hidden shadow-xl animate-bounce">
+                            جاري البحث عن شريك في <span id="spinningCountryName" class="text-white font-black text-sm">فرنسا...</span>
+                        </div>
+                    </div>
+
+                    <!-- Match Result Box -->
+                    <div id="matchResultBox" class="hidden w-full max-w-md p-5 rounded-3xl bg-gradient-to-b from-brand-950/40 to-slate-900/80 border border-brand-500/40 text-center space-y-4 shadow-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold">
+                            <i class="fa-solid fa-handshake"></i>
+                            <span>تم العثور على شريكك! 🎉</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-lg shadow-lg" id="matchUserAvatar">
+                                AN
+                            </div>
+                            <div class="text-right">
+                                <h3 class="text-base font-black" id="matchUserName">andreea_08</h3>
+                                <p class="text-xs opacity-75" id="matchUserCountry">رومانيا 🇷🇴</p>
+                            </div>
+                        </div>
+
+                        <!-- Duration Selector -->
+                        <div class="pt-3 border-t border-slate-800/80 space-y-2">
+                            <label class="block text-xs font-bold">حدد مدة جلسة المذاكرة مع شريكك:</label>
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="adjustSessionTime(-5)" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-lg border border-slate-700">-</button>
+                                <span class="text-3xl font-black text-emerald-500 font-mono tracking-wider" id="selectedSessionTime">20:00</span>
+                                <button onclick="adjustSessionTime(5)" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-lg border border-slate-700">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Presets -->
+                        <div class="flex justify-center gap-2 text-xs">
+                            <button onclick="setSessionTimePreset(15)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">15 دقيقة</button>
+                            <button onclick="setSessionTimePreset(20)" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-bold">20 دقيقة</button>
+                            <button onclick="setSessionTimePreset(25)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">25 دقيقة</button>
+                            <button onclick="setSessionTimePreset(45)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">45 دقيقة</button>
+                        </div>
+
+                        <button onclick="startMatchedFocusSession()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/20 transition transform active:scale-95 flex items-center justify-center gap-2">
+                            <span>ابدأ الجلسة الآن 🚀</span>
+                        </button>
+                    </div>
+
+                    <!-- Spin Globe Button -->
+                    <button id="spinGlobeBtn" onclick="triggerRandomMatch()" class="w-full max-w-md py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 text-white font-black text-sm shadow-xl shadow-brand-500/25 transition transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrows-spin text-lg"></i>
+                        <span>اسحب أو انقر للمطابقة العشوائية حول العالم 🌐</span>
+                    </button>
+                </div>
+
+                <!-- LIVE SESSION OVERLAY -->
+                <div id="liveSessionOverlay" class="hidden glass-card rounded-3xl p-8 border border-emerald-500/30 text-center space-y-6 shadow-2xl relative overflow-hidden">
+                    <div class="space-y-1">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 live-dot"></span>
+                            <span>أنت في جلسة تركيز مباشرة مع <span id="activePartnerHandle" class="font-black">andreea_08</span></span>
+                        </div>
+                    </div>
+
+                    <div class="py-2">
+                        <div class="w-20 h-20 mx-auto rounded-3xl bg-slate-900 border border-slate-700 flex items-center justify-center text-4xl text-emerald-400 shadow-2xl animate-float">
+                            🚀
+                        </div>
+                    </div>
+
+                    <div class="text-5xl sm:text-6xl font-black text-emerald-500 font-mono tracking-wider" id="activeSessionCountdown">
+                        20:00
+                    </div>
+
+                    <div class="pt-2">
+                        <p class="text-xs opacity-75 mb-2 font-bold">شجّع شريكك بنقرة واحدة:</p>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="sendPartnerReaction('🪙')" class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-lg transition active:scale-90">🪙</button>
+                            <button onclick="sendPartnerReaction('👍')" class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-lg transition active:scale-90">👍</button>
+                            <button onclick="sendPartnerReaction('❤️')" class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-lg transition active:scale-90">❤️</button>
+                            <button onclick="sendPartnerReaction('🔥')" class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-lg transition active:scale-90">🔥</button>
+                        </div>
+                    </div>
+
+                    <button onclick="openEndSessionConfirmModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 border border-slate-700 rounded-xl text-xs font-bold transition">
+                        إنهاء الجلسة
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= TAB 2: EXAM COUNTDOWNS (العد التنازلي للاختبارات) ================= -->
+            <div id="tabContentCountdown" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-black flex items-center gap-2">
+                            <i class="fa-solid fa-hourglass-half text-amber-500"></i>
+                            <span>العد التنازلي لمواعيد اختباراتك</span>
+                        </h2>
+                        <p class="text-xs opacity-75">شاهد الأيام المتبقية لاختبارات القدرات والتحصيلي وSTEP أو أضف موعدك الخاص</p>
+                    </div>
+                    <button onclick="openAddCustomExamModal()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>إضافة موعد اختبار خاص</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="examsContainer"></div>
+            </div>
+
+            <!-- ================= TAB 3: WHITEBOARD & FILE ANNOTATION (السبورة الذكية ومحلل الملفات) ================= -->
+            <div id="tabContentWhiteboard" class="hidden space-y-4">
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-black flex items-center gap-2">
+                                <i class="fa-solid fa-chalkboard text-sky-500"></i>
+                                <span>السبورة الذكية ومحلل الملفات 🎨 (دعم كامل للآيباد وقلم أبل)</span>
+                            </h2>
+                            <p class="text-xs opacity-75">اشرح وارسم، أو ارفع صورة ورقة سؤال أو مستند واكتب واشرح فوقها مباشرة بدقة عالية</p>
+                        </div>
+
+                        <!-- Whiteboard Tool Bar -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- File Upload Input -->
+                            <label class="px-3.5 py-1.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 text-white text-xs font-bold rounded-xl cursor-pointer shadow-md flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-file-arrow-up"></i>
+                                <span>رفع صورة / ملف ورقي</span>
+                                <input type="file" id="boardFileInput" accept="image/*" onchange="handleBoardFileUpload(event)" class="hidden">
+                            </label>
+
+                            <div class="h-6 w-px bg-slate-700 mx-1"></div>
+
+                            <!-- Tools -->
+                            <button onclick="setTool('pen')" id="toolPenBtn" class="px-3 py-1 bg-brand-600 text-white text-xs font-bold rounded-xl shadow">قلم ✏️</button>
+                            <button onclick="setTool('highlighter')" id="toolHighlighterBtn" class="px-3 py-1 bg-slate-800 text-xs font-bold text-slate-300 rounded-xl border border-slate-700">تظليل 🖍️</button>
+                            <button onclick="setTool('eraser')" id="toolEraserBtn" class="px-3 py-1 bg-slate-800 text-xs font-bold text-slate-300 rounded-xl border border-slate-700">ممحاة 🧹</button>
+
+                            <div class="h-6 w-px bg-slate-700 mx-1"></div>
+
+                            <!-- Colors -->
+                            <button onclick="setCanvasColor('#38bdf8')" class="w-7 h-7 rounded-lg bg-sky-400 border border-white/20 hover:scale-110 transition"></button>
+                            <button onclick="setCanvasColor('#34d399')" class="w-7 h-7 rounded-lg bg-emerald-400 border border-white/20 hover:scale-110 transition"></button>
+                            <button onclick="setCanvasColor('#fbbf24')" class="w-7 h-7 rounded-lg bg-amber-400 border border-white/20 hover:scale-110 transition"></button>
+                            <button onclick="setCanvasColor('#f43f5e')" class="w-7 h-7 rounded-lg bg-rose-500 border border-white/20 hover:scale-110 transition"></button>
+                            <button onclick="setCanvasColor('#ffffff')" class="w-7 h-7 rounded-lg bg-white border border-slate-400 hover:scale-110 transition"></button>
+
+                            <div class="h-6 w-px bg-slate-700 mx-1"></div>
+
+                            <!-- Stroke Size -->
+                            <select id="boardLineWidth" onchange="setCanvasLineWidth(this.value)" class="input-themed rounded-xl px-2.5 py-1 text-xs font-bold focus:outline-none">
+                                <option value="2">رفع رفيع</option>
+                                <option value="5" selected>خط متوسط</option>
+                                <option value="12">خط عريض</option>
+                            </select>
+
+                            <button onclick="undoCanvas()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs text-white font-bold rounded-xl border border-slate-700">تراجع ↩️</button>
+                            <button onclick="clearCanvas()" class="px-3 py-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 text-xs font-bold rounded-xl border border-rose-500/20">مسح الكل</button>
+                            <button onclick="downloadCanvas()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md">تصدير صورة 💾</button>
+                        </div>
+                    </div>
+
+                    <!-- Large Interactive Board Container -->
+                    <div class="relative w-full h-[520px] rounded-2xl overflow-hidden border bg-slate-950 canvas-grid-bg shadow-inner" style="border-color: var(--border-main);" id="canvasContainer">
+                        <canvas id="whiteboardCanvas" class="w-full h-full cursor-crosshair block" style="touch-action: none;"></canvas>
+                        
+                        <div id="canvasEmptyState" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-30 text-center p-4">
+                            <i class="fa-solid fa-pen-ruler text-5xl mb-2"></i>
+                            <p class="text-xs font-bold">السبورة جاهزة للرسم أو رفع صور الأسئلة والمستندات</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB 4: SMART ERROR NOTEBOOK (دفتر الأخطاء الذكي) ================= -->
+            <div id="tabContentNotebook" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-black flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-emerald-500"></i>
+                            <span>دفتر الأخطاء الذكي</span>
+                        </h2>
+                        <p class="text-xs opacity-75">وثّق أسئلتك التي أخطأت فيها لمعودتها وإتقانها قبل الاختبار</p>
+                    </div>
+                    <button onclick="openAddErrorModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 text-slate-950 font-black text-xs shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>تسجيل خطأ جديد بالدفتر</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl glass-card">
+                    <button onclick="filterErrors('all')" class="error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-600 text-white" data-filter="all">الكل (<span id="countAllErrors">0</span>)</button>
+                    <button onclick="filterErrors('قدرات كمي')" class="error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card opacity-80" data-filter="قدرات كمي">قدرات كمي</button>
+                    <button onclick="filterErrors('قدرات لفظي')" class="error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card opacity-80" data-filter="قدرات لفظي">قدرات لفظي</button>
+                    <button onclick="filterErrors('تحصيلي')" class="error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card opacity-80" data-filter="تحصيلي">تحصيلي</button>
+                    <button onclick="filterErrors('ستيب')" class="error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card opacity-80" data-filter="ستيب">STEP ستيب</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="errorLogsContainer"></div>
+            </div>
+
+            <!-- ================= TAB 5: STUDY PLANNER (جداول المذاكرة) ================= -->
+            <div id="tabContentPlanner" class="hidden space-y-6">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-xl font-black flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-indigo-500"></i>
+                                <span>جدول المذاكرة الأسبوعي الذكي 📅</span>
+                            </h2>
+                            <p class="text-xs opacity-75">صمم جدولك الأسبوعي بمرونة لتنظيم المذاكرة اليومية وتحديد المهام</p>
+                        </div>
+                        <button onclick="addNewScheduleTask()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl shadow-md">
+                            + إضافة مهمة للجدول
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3" id="weeklyPlannerGrid"></div>
+                </div>
+            </div>
+
+            <!-- ================= TAB 6: ANTI-PROCRASTINATION & POMODORO (كسر التسويف) ================= -->
+            <div id="tabContentFocus" class="hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- 5-Minute Rule Buster -->
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-4 border border-rose-500/30">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-500 text-xs font-bold">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>قاعدة الـ 5 دقائق الفعّالة ⚡</span>
+                        </div>
+                        <h3 class="text-lg font-black">حاس بتكاسل وتأجيل للمذاكرة؟</h3>
+                        <p class="text-xs opacity-80 leading-relaxed">
+                            اعد عُقلك بأنك ستذاكر لـ 5 دقائق فقط! السر النفسي يقول: بمجرد أن تبدأ لـ 5 دقائق سيتلاشى الثقل وتستمر لساعات.
+                        </p>
+
+                        <div class="text-center py-6 bg-slate-950/40 rounded-2xl border" style="border-color: var(--border-main);">
+                            <div class="text-5xl font-black text-rose-500 font-mono" id="fiveMinCountdown">05:00</div>
+                        </div>
+
+                        <button onclick="toggleFiveMinuteTimer()" id="btnFiveMin" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 text-white font-black text-xs shadow-lg transition">
+                            ابدأ تحدي الـ 5 دقائق الآن 🔥
+                        </button>
+                    </div>
+
+                    <!-- Standard Pomodoro Timer -->
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-4 border border-indigo-500/30">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-xs font-bold">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>مؤقت بومودورو للتركيز ⏱️</span>
+                        </div>
+                        <h3 class="text-lg font-black">جلسة تركيز عالي (25 دقيقة)</h3>
+                        <p class="text-xs opacity-80 leading-relaxed">
+                            25 دقيقة مذاكرة مركزة تعقبها 5 دقائق استراحة لتنشيط الذهن والمحافظة على أقصى استيعاب.
+                        </p>
+
+                        <div class="text-center py-6 bg-slate-950/40 rounded-2xl border" style="border-color: var(--border-main);">
+                            <div class="text-5xl font-black text-indigo-500 font-mono" id="pomodoroCountdown">25:00</div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="togglePomodoroTimer()" id="btnPomodoro" class="flex-1 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-black text-xs shadow-lg transition">
+                                ابدأ مؤقت البومودورو
+                            </button>
+                            <button onclick="resetPomodoroTimer()" class="px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700">
+                                إعادة ضبط
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 3: EXECUTIVE DIRECTOR DASHBOARD ================= -->
+        <div id="adminDashboardView" class="hidden space-y-8">
+            
+            <div class="glass-card rounded-3xl p-6 border border-brand-500/40 space-y-4 shadow-2xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 live-dot"></span>
+                            <span>البث المباشر - لوحة المدرب التنفيذي ومؤسس المنصة</span>
+                        </div>
+                        <h1 class="text-2xl font-black">لوحة تحكم إدارة "مُدوِّن" 🚀</h1>
+                        <p class="text-xs opacity-75">متابعة أعداد الطلاب، المشتركين، الإيرادات بالريال السعودي، والتواصل المباشر عبر الواتساب.</p>
+                    </div>
+                    
+                    <button onclick="exportToCSV()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg">
+                        <i class="fa-solid fa-file-csv text-base"></i>
+                        <span>تصدير بيانات المشتركين (CSV)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="glass-card rounded-2xl p-5 border border-emerald-500/30">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold opacity-75">المتواجدون الآن بالموقع</span>
+                        <div class="w-3 h-3 rounded-full bg-emerald-400 live-dot"></div>
+                    </div>
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span class="text-3xl font-black text-emerald-500" id="statLiveUsers">35,079</span>
+                        <span class="text-xs opacity-75">طالب نشط</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold opacity-75">إجمالي الطلاب المسجلين</span>
+                        <i class="fa-solid fa-users text-brand-500"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span class="text-3xl font-black" id="statTotalUsers">0</span>
+                        <span class="text-xs opacity-75">طالب</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-amber-500/30">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold opacity-75">المشتركون المدفوعون (29.99 ر.س)</span>
+                        <i class="fa-solid fa-crown text-amber-500"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span class="text-3xl font-black text-amber-500" id="statPaidSubscribers">0</span>
+                        <span class="text-xs opacity-75">مشترك</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-brand-500/30">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold opacity-75">إجمالي الإيرادات (ر.س)</span>
+                        <i class="fa-solid fa-sack-dollar text-emerald-500"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline gap-1">
+                        <span class="text-3xl font-black text-emerald-500" id="statTotalRevenue">0.00</span>
+                        <span class="text-xs font-bold">ر.س</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Directory Table -->
+            <div class="glass-card rounded-3xl p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-black flex items-center gap-2">
+                            <i class="fa-solid fa-address-book text-brand-500"></i>
+                            <span>سجل بيانات الطلاب والمشتركين</span>
+                        </h2>
+                        <p class="text-xs opacity-75">انقر على رقم الجوال لمراسلة الطالب مباشرة عبر الواتساب</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="adminSearchInput" oninput="renderAdminStudentsTable()" placeholder="ابحث بالاسم أو الرقم..." class="input-themed rounded-xl px-3 py-1.5 text-xs focus:outline-none w-48 sm:w-60">
+                        <select id="adminStatusFilter" onchange="renderAdminStudentsTable()" class="input-themed rounded-xl px-3 py-1.5 text-xs focus:outline-none">
+                            <option value="all">الكل</option>
+                            <option value="paid">مشترك مدفوع (29.99 ر.س)</option>
+                            <option value="free">تجربة مجانية</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border" style="border-color: var(--border-main);">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-900/40 opacity-90 font-bold border-b" style="border-color: var(--border-main);">
+                            <tr>
+                                <th class="p-3.5">اسم الطالب</th>
+                                <th class="p-3.5">البريد الإلكتروني</th>
+                                <th class="p-3.5">الجوال (الواتساب)</th>
+                                <th class="p-3.5">المسار</th>
+                                <th class="p-3.5">حالة الاشتراك</th>
+                                <th class="p-3.5">تاريخ التسجيل</th>
+                                <th class="p-3.5 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminStudentsTableBody" class="divide-y" style="border-color: var(--border-main);"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Marketers Section -->
+            <div class="glass-card rounded-3xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-black flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn text-amber-500"></i>
+                            <span>أكواد المسوقين والعمولات</span>
+                        </h2>
+                        <p class="text-xs opacity-75">متابعة إحالات المسوقين لحساب العمولات</p>
+                    </div>
+                    <button onclick="addNewAffiliateCode()" class="px-3.5 py-2 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-xl text-xs font-bold">
+                        + إضافة كود مسوق
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="affiliatesContainer"></div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t py-6 text-center text-xs opacity-60 mt-auto" style="border-color: var(--border-main);">
+        <p>© 2026 منصة مُدوِّن (Modawin) - جميع الحقوق محفوظة لطلاب المملكة العربية السعودية 🇸🇦</p>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Modal 1: Clean Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 space-y-5 relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 left-4 opacity-60 hover:opacity-100">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center space-y-1">
+                <h3 class="text-xl font-black">تسجيل الدخول للمنصة</h3>
+                <p class="text-xs opacity-75">أدخل البريد الإلكتروني وكلمة المرور</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1">البريد الإلكتروني / الجوال</label>
+                    <input type="text" id="loginEmail" required placeholder="name@example.com أو 05xxxxxxxx" class="w-full input-themed rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">كلمة المرور</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full input-themed rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-brand-500">
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-lg transition">
+                    تسجيل الدخول 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Register Modal -->
+    <div id="registerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="glass-card w-full max-w-md rounded-3xl border border-emerald-500/30 p-6 space-y-5 relative">
+            <button onclick="closeRegisterModal()" class="absolute top-4 left-4 opacity-60 hover:opacity-100">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center space-y-1">
+                <h3 class="text-xl font-black">إنشاء حساب طالب جديد 🎉</h3>
+                <p class="text-xs opacity-75">احصل على وصول كامل لمنصة مُدوِّن والمذاكرة العالمية</p>
+                <div class="pt-1">
+                    <span class="text-2xl font-black text-emerald-500">29.99</span>
+                    <span class="text-xs font-bold opacity-75">ر.س فقط</span>
+                </div>
+            </div>
+
+            <form onsubmit="handleRegisterSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold mb-1">اسم الطالب/الطالبة *</label>
+                    <input type="text" id="regName" required placeholder="مثال: فهد القحطاني" class="w-full input-themed rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold mb-1">البريد الإلكتروني *</label>
+                        <input type="email" id="regEmail" required placeholder="student@gmail.com" class="w-full input-themed rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1">الجوال (السعودية) *</label>
+                        <input type="tel" id="regPhone" required placeholder="05xxxxxxxx" pattern="05[0-9]{8}" class="w-full input-themed rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold mb-1">المسار *</label>
+                        <select id="regTrack" class="w-full input-themed rounded-xl px-3.5 py-2 text-xs focus:outline-none">
+                            <option value="القدرات العامة">القدرات العامة</option>
+                            <option value="التحصيلي العلمي">التحصيلي العلمي</option>
+                            <option value="اختبار ستيب STEP">اختبار ستيب STEP</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1">كلمة المرور *</label>
+                        <input type="password" id="regPassword" required placeholder="••••••••" class="w-full input-themed rounded-xl px-3.5 py-2 text-xs focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1">كود الخصم / المسوّق (اختياري)</label>
+                    <input type="text" id="regPromo" placeholder="FAHAD أو SAUDI20" class="w-full input-themed rounded-xl px-3.5 py-1.5 text-xs text-amber-500 uppercase focus:outline-none">
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 text-slate-950 font-black text-xs shadow-lg transition">
+                    إتمام التسجيل والاشتراك (29.99 ر.س) 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add Error Modal -->
+    <div id="addErrorModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="glass-card w-full max-w-lg rounded-3xl p-6 space-y-4 relative">
+            <button onclick="closeAddErrorModal()" class="absolute top-4 left-4 opacity-60 hover:opacity-100">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-black">تسجيل خطأ في دفترك الذكي</h3>
+            <form onsubmit="handleAddErrorLog(event)" class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold mb-1">المسار / المادة *</label>
+                        <select id="errorTrack" class="w-full input-themed rounded-xl px-3 py-2 text-xs">
+                            <option value="قدرات كمي">قدرات كمي</option>
+                            <option value="قدرات لفظي">قدرات لفظي</option>
+                            <option value="تحصيلي">تحصيلي</option>
+                            <option value="ستيب">ستيب STEP</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1">سبب الخطأ *</label>
+                        <select id="errorReason" class="w-full input-themed rounded-xl px-3 py-2 text-xs">
+                            <option value="تسرع وعدم تركيز">تسرع وعدم تركيز ⚡</option>
+                            <option value="عدم حفظ القانون">عدم حفظ القانون 📐</option>
+                            <option value="خدعة بالخيارات">خدعة بالخيارات 🎯</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1">السؤال الذي أخطأت فيه *</label>
+                    <textarea id="errorQuestion" required rows="2" placeholder="نص السؤال..." class="w-full input-themed rounded-xl p-2.5 text-xs"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1">الحل الصحيح والقانون *</label>
+                    <textarea id="errorSolution" required rows="2" placeholder="الحل والقانون الصحيح..." class="w-full input-themed rounded-xl p-2.5 text-xs"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs">
+                    حفظ الخطأ بالدفتر 💾
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Add Custom Exam Modal -->
+    <div id="addCustomExamModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 space-y-4 relative">
+            <button onclick="closeAddCustomExamModal()" class="absolute top-4 left-4 opacity-60 hover:opacity-100">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-black">إضافة موعد اختبار خاص</h3>
+            <form onsubmit="handleCustomExamSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold mb-1">اسم الاختبار *</label>
+                    <input type="text" id="customExamTitle" required placeholder="مثال: اختباري المحوسب الثاني" class="w-full input-themed rounded-xl p-2.5 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">تاريخ الاختبار *</label>
+                    <input type="date" id="customExamDate" required class="w-full input-themed rounded-xl p-2.5 text-xs">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl">
+                    حفظ الموعد ⏳
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: End Session Modal -->
+    <div id="endSessionConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
+        <div class="glass-card w-full max-w-sm rounded-3xl p-6 text-center space-y-4 relative">
+            <h3 class="text-lg font-black">إنهاء الجلسة؟</h3>
+            <p class="text-xs opacity-80 leading-relaxed">
+                سيؤدي هذا إلى إنهاء جلسة التركيز مع شريكك الحقيقي.
+            </p>
+            <div class="flex flex-col gap-2 pt-2">
+                <button onclick="confirmEndSession()" class="w-full py-3 rounded-2xl bg-slate-800 hover:bg-rose-600 text-white font-bold text-xs border border-slate-700 transition">
+                    إنهاء الجلسة
+                </button>
+                <button onclick="closeEndSessionConfirmModal()" class="w-full py-3 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-black text-xs shadow-lg transition">
+                    مواصلة الجلسة 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= APPLICATION LOGIC ================= -->
+    <script>
+        /* DATABASE & SEED DATA */
+        const DEFAULT_STUDENTS = [
+            { id: 1, name: 'عبدالعزيز الغامدي', email: 'aziz@gmail.com', phone: '0551234567', track: 'القدرات العامة', status: 'paid', promo: 'SAUDI20', date: '2026-11-20' },
+            { id: 2, name: 'سارة العتيبي', email: 'sara@gmail.com', phone: '0509876543', track: 'التحصيلي العلمي', status: 'paid', promo: 'FAHAD', date: '2026-11-21' },
+            { id: 3, name: 'فهد القحطاني', email: 'student@modawin.sa', phone: '0543210987', track: 'القدرات العامة', status: 'paid', promo: '-', date: '2026-11-22' }
+        ];
+
+        const DEFAULT_ERROR_LOGS = [
+            { id: 101, track: 'قدرات كمي', question: 'إذا كان س + ص = 10 و س - ص = 4، فإن قيمة س² - ص² تساوي؟', solution: 'س² - ص² = (س + ص)(س - ص) = 10 × 4 = 40', reason: 'تسرع وعدم تركيز', status: 'pending' },
+            { id: 102, track: 'قدرات لفظي', question: 'تناظر لفظي: شجرة : ثمرة', solution: 'سحابة : مطر (علاقة مصدر ومنتج)', reason: 'خدعة بالخيارات', status: 'mastered' }
+        ];
+
+        const DEFAULT_EXAMS = [
+            { id: 1, title: 'القدرات العامة المحوسب', date: '2026-12-15', icon: 'fa-brain', color: 'text-brand-500' },
+            { id: 2, title: 'التحصيلي العلمي الفترة الأولى', date: '2027-05-20', icon: 'fa-flask', color: 'text-emerald-500' },
+            { id: 3, title: 'اختبار STEP للغة الإنجليزية', date: '2026-12-01', icon: 'fa-language', color: 'text-indigo-500' }
+        ];
+
+        const SAMPLE_WORLD_PARTNERS = [
+            { name: 'andreea_08', country: 'رومانيا 🇷🇴', avatar: 'AN', lat: 45.9432, lon: 24.9668 },
+            { name: 'lucas_br', country: 'البرازيل 🇧🇷', avatar: 'LB', lat: -14.2350, lon: -51.9253 },
+            { name: 'mateo_es', country: 'إسبانيا 🇪🇸', avatar: 'ME', lat: 40.4168, lon: -3.7038 },
+            { name: 'sara_eg', country: 'مصر 🇪🇬', avatar: 'SE', lat: 26.8206, lon: 30.8025 },
+            { name: 'yuki_jp', country: 'اليابان 🇯🇵', avatar: 'YJ', lat: 36.2048, lon: 138.2529 }
+        ];
+
+        let currentUser = JSON.parse(localStorage.getItem('modawin_session')) || null;
+        let studentsDB = JSON.parse(localStorage.getItem('modawin_students')) || DEFAULT_STUDENTS;
+        let errorLogs = JSON.parse(localStorage.getItem('modawin_errors')) || DEFAULT_ERROR_LOGS;
+        let customExams = JSON.parse(localStorage.getItem('modawin_exams')) || DEFAULT_EXAMS;
+        let affiliatesList = JSON.parse(localStorage.getItem('modawin_affiliates')) || [
+            { code: 'FAHAD', name: 'أكاديمية فهد', sales: 12 },
+            { code: 'SAUDI20', name: 'حملة تيك توك', sales: 24 }
+        ];
+
+        let currentErrorFilter = 'all';
+        let sessionMinutes = 20;
+        let sessionTimerInterval = null;
+        let activeSessionSeconds = 20 * 60;
+        let matchedPartner = null;
+
+        /* Procrastination Timers */
+        let fiveMinSeconds = 300;
+        let fiveMinInterval = null;
+        let pomodoroSeconds = 1500;
+        let pomodoroInterval = null;
+
+        /* ----------------------------------------------------
+         * INITIALIZATION & THEME HANDLING
+         * ---------------------------------------------------- */
+        window.onload = function() {
+            saveState();
+            
+            const savedTheme = localStorage.getItem('modawin_theme') || 'dark';
+            applyTheme(savedTheme);
+
+            renderAppView();
+            initWhiteboardCanvas();
+            initPureCanvasGlobe();
+        };
+
+        function saveState() {
+            localStorage.setItem('modawin_students', JSON.stringify(studentsDB));
+            localStorage.setItem('modawin_errors', JSON.stringify(errorLogs));
+            localStorage.setItem('modawin_exams', JSON.stringify(customExams));
+            localStorage.setItem('modawin_affiliates', JSON.stringify(affiliatesList));
+            if (currentUser) {
+                localStorage.setItem('modawin_session', JSON.stringify(currentUser));
+            } else {
+                localStorage.removeItem('modawin_session');
+            }
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            if (theme === 'light') {
+                html.classList.remove('dark');
+                html.classList.add('light');
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+            }
+            localStorage.setItem('modawin_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+            renderAppView();
+        }
+
+        /* ----------------------------------------------------
+         * ROUTING & RENDERING
+         * ---------------------------------------------------- */
+        function renderAppView() {
+            const landingView = document.getElementById('landingView');
+            const studentView = document.getElementById('studentDashboardView');
+            const adminView = document.getElementById('adminDashboardView');
+            const headerActions = document.getElementById('headerActions');
+
+            const isLight = document.documentElement.classList.contains('light');
+            const themeBtn = `
+                <button onclick="toggleTheme()" title="تبديل المظهر" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 flex items-center justify-center transition shadow">
+                    <i class="fa-solid ${isLight ? 'fa-moon' : 'fa-sun text-amber-300'} text-base"></i>
+                </button>
+            `;
+
+            headerActions.innerHTML = '';
+
+            if (!currentUser) {
+                landingView.classList.remove('hidden');
+                studentView.classList.add('hidden');
+                adminView.classList.add('hidden');
+
+                headerActions.innerHTML = `
+                    <button onclick="openLoginModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition border border-slate-700">
+                        تسجيل الدخول
+                    </button>
+                    <button onclick="openRegisterModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-md">
+                        إنشاء حساب (29.99 ر.س)
+                    </button>
+                    ${themeBtn}
+                `;
+            } else if (currentUser.role === 'admin') {
+                landingView.classList.add('hidden');
+                studentView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+
+                headerActions.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 bg-brand-500/20 text-brand-500 border border-brand-500/30 rounded-xl text-xs font-bold">
+                            <i class="fa-solid fa-user-shield"></i> المدير التنفيذي
+                        </span>
+                        <button onclick="handleLogout()" class="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/20 text-xs font-bold transition">
+                            خروج
+                        </button>
+                    </div>
+                    ${themeBtn}
+                `;
+
+                renderAdminDashboard();
+            } else {
+                landingView.classList.add('hidden');
+                adminView.classList.add('hidden');
+                studentView.classList.remove('hidden');
+
+                const isPaid = currentUser.status === 'paid';
+
+                headerActions.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold hidden sm:inline">${currentUser.name}</span>
+                        <span class="px-2.5 py-1 text-[10px] font-bold rounded-lg ${isPaid ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'}">
+                            ${isPaid ? 'مشترك 👑' : 'مجاني'}
+                        </span>
+                        <button onclick="handleLogout()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold transition">
+                            خروج
+                        </button>
+                    </div>
+                    ${themeBtn}
+                `;
+
+                document.getElementById('studentHeaderName').innerText = currentUser.name;
+                document.getElementById('studentHeaderTrack').innerText = currentUser.track;
+                document.getElementById('studentBannerStatus').innerText = isPaid ? 'حساب مفعل 👑 (29.99 ر.س)' : 'تجربة مجانية';
+
+                renderExamsList();
+                renderErrorLogs();
+                renderWeeklyPlanner();
+            }
+        }
+
+        function handleLogoClick() {
+            if (!currentUser) window.scrollTo({ top: 0, behavior: 'smooth' });
+            else renderAppView();
+        }
+
+        /* ----------------------------------------------------
+         * AUTHENTICATION LOGIC
+         * ---------------------------------------------------- */
+        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        function openRegisterModal() { document.getElementById('registerModal').classList.remove('hidden'); }
+        function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden'); }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('loginEmail').value.trim();
+            const passwordInput = document.getElementById('loginPassword').value.trim();
+
+            if (emailInput === 'admin@modawin.sa' && passwordInput === 'Modawin2026') {
+                currentUser = { name: 'تركي (المدير التنفيذي)', email: 'admin@modawin.sa', role: 'admin' };
+                saveState();
+                closeLoginModal();
+                renderAppView();
+                confetti({ particleCount: 60, spread: 70 });
+                showToast('أهلاً بك يا مدير المنصة! تم فتح لوحة التحكم التنفيذية 🚀');
+                return;
+            }
+
+            const existingStudent = studentsDB.find(s => s.email === emailInput || s.phone === emailInput);
+            if (existingStudent) {
+                currentUser = { ...existingStudent, role: 'student' };
+                saveState();
+                closeLoginModal();
+                renderAppView();
+                showToast(`أهلاً بعودتك يا ${existingStudent.name} 👋`);
+            } else {
+                const newStudent = {
+                    id: Date.now(),
+                    name: emailInput.split('@')[0] || 'طالب جديد',
+                    email: emailInput,
+                    phone: '05' + Math.floor(10000000 + Math.random() * 90000000),
+                    track: 'القدرات العامة',
+                    status: 'paid',
+                    date: new Date().toISOString().split('T')[0]
+                };
+                studentsDB.unshift(newStudent);
+                currentUser = { ...newStudent, role: 'student' };
+                saveState();
+                closeLoginModal();
+                renderAppView();
+                showToast('تم تسجيل دخولك وتفعيل حسابك بنجاح!');
+            }
+        }
+
+        function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const track = document.getElementById('regTrack').value;
+            const promo = document.getElementById('regPromo').value.trim().toUpperCase() || '-';
+
+            const newStudent = {
+                id: Date.now(),
+                name,
+                email,
+                phone,
+                track,
+                status: 'paid',
+                promo,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            studentsDB.unshift(newStudent);
+            if (promo !== '-') {
+                affiliatesList = affiliatesList.map(a => a.code === promo ? { ...a, sales: a.sales + 1 } : a);
+            }
+
+            currentUser = { ...newStudent, role: 'student' };
+            saveState();
+            closeRegisterModal();
+            renderAppView();
+
+            confetti({ particleCount: 100, spread: 80 });
+            showToast(`تم تفعيل حسابك بـ 29.99 ر.س بنجاح يا ${name}! 🎉`);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            saveState();
+            renderAppView();
+            showToast('تم تسجيل الخروج');
+        }
+
+        /* ----------------------------------------------------
+         * STUDENT TABS SWITCHING
+         * ---------------------------------------------------- */
+        function switchStudentTab(tab) {
+            const tabs = ['World', 'Countdown', 'Whiteboard', 'Notebook', 'Planner', 'Focus'];
+            tabs.forEach(t => {
+                document.getElementById(`tabContent${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tabBtn${t}`);
+                if (btn) {
+                    btn.className = 'p-3.5 rounded-2xl text-xs font-bold glass-card opacity-80 hover:opacity-100 flex flex-col items-center justify-center gap-2 transition';
+                }
+            });
+
+            const activeContent = document.getElementById(`tabContent${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            const activeBtn = document.getElementById(`tabBtn${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            
+            if (activeContent) activeContent.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = 'p-3.5 rounded-2xl text-xs font-bold bg-brand-600 text-white flex flex-col items-center justify-center gap-2 transition shadow-lg scale-105';
+
+            if (tab === 'whiteboard') {
+                setTimeout(resizeWhiteboardCanvas, 100);
+            }
+        }
+
+        /* ----------------------------------------------------
+         * BULLETPROOF PURE HTML5 CANVAS 3D GLOBE ENGINE
+         * Solves Black Screen Bug 100% On All Devices & iPads
+         * ---------------------------------------------------- */
+        let gCanvas, gCtx;
+        let gRotX = 0.3, gRotY = 0.8;
+        let gIsSpinning = false;
+        let gActiveArc = null;
+
+        // Simplified continental polygon lat/lon bounds for crisp drawing
+        const CONTINENTS = [
+            // North America
+            [ [60,-120], [50,-125], [30,-115], [20,-100], [15,-90], [25,-80], [45,-75], [55,-60], [70,-80] ],
+            // South America
+            [ [10,-75], [-10,-78], [-35,-72], [-55,-68], [-40,-50], [-5,-35], [5,-60] ],
+            // Europe
+            [ [65,10], [60,-10], [40,-10], [36,5], [40,25], [55,30], [65,25] ],
+            // Africa
+            [ [35,-10], [30,32], [10,42], [-10,40], [-35,20], [-30,15], [5,8], [15,-17] ],
+            // Asia / Saudi Arabia region
+            [ [40,40], [30,50], [20,60], [10,75], [10,100], [25,120], [40,120], [60,100], [65,60], [50,45] ],
+            // Saudi Arabia / Middle East
+            [ [30,35], [28,48], [16,53], [12,44], [20,38], [28,34] ],
+            // Australia
+            [ [-15,130], [-25,115], [-35,118], [-38,145], [-18,145] ]
+        ];
+
+        function initPureCanvasGlobe() {
+            gCanvas = document.getElementById('pureGlobeCanvas');
+            if (!gCanvas) return;
+            gCtx = gCanvas.getContext('2d');
+
+            const container = document.getElementById('globeCanvasContainer');
+            gCanvas.width = container.clientWidth;
+            gCanvas.height = container.clientHeight;
+
+            // Drag Controls
+            let isDragging = false;
+            let startX = 0, startY = 0;
+
+            const handleStart = (x, y) => { isDragging = true; startX = x; startY = y; };
+            const handleMove = (x, y) => {
+                if (!isDragging) return;
+                const dx = (x - startX) * 0.008;
+                const dy = (y - startY) * 0.008;
+                gRotY += dx;
+                gRotX = Math.max(-1.2, Math.min(1.2, gRotX + dy));
+                startX = x; startY = y;
+            };
+            const handleEnd = () => { isDragging = false; };
+
+            gCanvas.addEventListener('mousedown', e => handleStart(e.clientX, e.clientY));
+            window.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', handleEnd);
+
+            gCanvas.addEventListener('touchstart', e => handleStart(e.touches[0].clientX, e.touches[0].clientY));
+            window.addEventListener('touchmove', e => { if (isDragging) handleMove(e.touches[0].clientX, e.touches[0].clientY); });
+            window.addEventListener('touchend', handleEnd);
+
+            requestAnimationFrame(drawPureGlobeFrame);
+        }
+
+        /* 3D Sphere Projection Coordinates Math */
+        function project3D(lat, lon, radius, rotX, rotY) {
+            const radLat = lat * Math.PI / 180;
+            const radLon = lon * Math.PI / 180;
+
+            // Sphere coordinates
+            let x = radius * Math.cos(radLat) * Math.sin(radLon);
+            let y = radius * Math.sin(radLat);
+            let z = radius * Math.cos(radLat) * Math.cos(radLon);
+
+            // Rotate Y
+            let x1 = x * Math.cos(rotY) + z * Math.sin(rotY);
+            let z1 = -x * Math.sin(rotY) + z * Math.cos(rotY);
+
+            // Rotate X
+            let y2 = y * Math.cos(rotX) - z1 * Math.sin(rotX);
+            let z2 = y * Math.sin(rotX) + z1 * Math.cos(rotX);
+
+            return { x: x1, y: y2, z: z2 };
+        }
+
+        function drawPureGlobeFrame() {
+            if (!gCanvas || !gCtx) return;
+
+            const width = gCanvas.width;
+            const height = gCanvas.height;
+            const radius = Math.min(width, height) * 0.38;
+            const cx = width / 2;
+            const cy = height / 2;
+
+            if (gIsSpinning) {
+                gRotY += 0.12;
+            } else {
+                gRotY += 0.003;
+            }
+
+            gCtx.clearRect(0, 0, width, height);
+
+            // Globe Atmosphere Outer Glow
+            const bgGlow = gCtx.createRadialGradient(cx, cy, radius * 0.8, cx, cy, radius * 1.35);
+            bgGlow.addColorStop(0, 'rgba(99, 102, 241, 0.25)');
+            bgGlow.addColorStop(1, 'rgba(2, 6, 23, 0)');
+            gCtx.fillStyle = bgGlow;
+            gCtx.beginPath();
+            gCtx.arc(cx, cy, radius * 1.35, 0, Math.PI * 2);
+            gCtx.fill();
+
+            // Main Sphere Base
+            const sphereGrad = gCtx.createRadialGradient(cx - radius * 0.3, cy - radius * 0.3, radius * 0.1, cx, cy, radius);
+            sphereGrad.addColorStop(0, '#1e1b4b');
+            sphereGrad.addColorStop(0.7, '#0f172a');
+            sphereGrad.addColorStop(1, '#020617');
+
+            gCtx.fillStyle = sphereGrad;
+            gCtx.beginPath();
+            gCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+            gCtx.fill();
+            gCtx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+            gCtx.lineWidth = 2;
+            gCtx.stroke();
+
+            // Draw Longitude and Latitude Graticule Lines
+            gCtx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
+            gCtx.lineWidth = 1;
+
+            for (let lat = -60; lat <= 60; lat += 30) {
+                gCtx.beginPath();
+                let first = true;
+                for (let lon = -180; lon <= 180; lon += 10) {
+                    const p = project3D(lat, lon, radius, gRotX, gRotY);
+                    if (p.z > 0) {
+                        if (first) { gCtx.moveTo(cx + p.x, cy - p.y); first = false; }
+                        else { gCtx.lineTo(cx + p.x, cy - p.y); }
+                    } else { first = true; }
+                }
+                gCtx.stroke();
+            }
+
+            // Draw Continents
+            gCtx.fillStyle = 'rgba(52, 211, 153, 0.35)';
+            gCtx.strokeStyle = '#34d399';
+            gCtx.lineWidth = 1.2;
+
+            CONTINENTS.forEach(poly => {
+                gCtx.beginPath();
+                let visible = false;
+                poly.forEach((pt, idx) => {
+                    const p = project3D(pt[0], pt[1], radius, gRotX, gRotY);
+                    if (p.z > 0) visible = true;
+                    if (idx === 0) gCtx.moveTo(cx + p.x, cy - p.y);
+                    else gCtx.lineTo(cx + p.x, cy - p.y);
+                });
+                gCtx.closePath();
+                if (visible) {
+                    gCtx.fill();
+                    gCtx.stroke();
+                }
+            });
+
+            // Draw KSA Gold Marker (Riyadh: 24.7, 46.6)
+            const ksaP = project3D(24.7136, 46.6753, radius, gRotX, gRotY);
+            if (ksaP.z > 0) {
+                gCtx.fillStyle = '#fbbf24';
+                gCtx.beginPath();
+                gCtx.arc(cx + ksaP.x, cy - ksaP.y, 6, 0, Math.PI * 2);
+                gCtx.fill();
+                gCtx.shadowColor = '#fbbf24';
+                gCtx.shadowBlur = 12;
+            }
+
+            // Draw Glowing Arc to Matched Partner if exists
+            if (gActiveArc) {
+                const partnerP = project3D(gActiveArc.lat, gActiveArc.lon, radius, gRotX, gRotY);
+
+                if (ksaP.z > 0 || partnerP.z > 0) {
+                    gCtx.strokeStyle = '#f59e0b';
+                    gCtx.lineWidth = 3;
+                    gCtx.shadowColor = '#f59e0b';
+                    gCtx.shadowBlur = 15;
+
+                    gCtx.beginPath();
+                    const startX = cx + ksaP.x;
+                    const startY = cy - ksaP.y;
+                    const endX = cx + partnerP.x;
+                    const endY = cy - partnerP.y;
+                    const midX = (startX + endX) / 2;
+                    const midY = (startY + endY) / 2 - radius * 0.4;
+
+                    gCtx.moveTo(startX, startY);
+                    gCtx.quadraticCurveTo(midX, midY, endX, endY);
+                    gCtx.stroke();
+
+                    // Partner Marker
+                    if (partnerP.z > 0) {
+                        gCtx.fillStyle = '#38bdf8';
+                        gCtx.beginPath();
+                        gCtx.arc(endX, endY, 7, 0, Math.PI * 2);
+                        gCtx.fill();
+                    }
+                }
+            }
+
+            gCtx.shadowBlur = 0;
+            requestAnimationFrame(drawPureGlobeFrame);
+        }
+
+        function triggerRandomMatch() {
+            if (gIsSpinning) return;
+
+            gIsSpinning = true;
+            document.getElementById('spinGlobeBtn').disabled = true;
+            document.getElementById('matchResultBox').classList.add('hidden');
+            document.getElementById('globeSpinOverlay').classList.remove('hidden');
+
+            const countries = ['فرنسا 🇫🇷', 'صربيا 🇷🇸', 'هولندا 🇳🇱', 'رومانيا 🇷🇴', 'البرازيل 🇧🇷', 'المملكة العربية السعودية 🇸🇦', 'إسبانيا 🇪🇸'];
+            let step = 0;
+
+            const interval = setInterval(() => {
+                document.getElementById('spinningCountryName').innerText = countries[step % countries.length];
+                step++;
+            }, 180);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                gIsSpinning = false;
+                document.getElementById('spinGlobeBtn').disabled = false;
+                document.getElementById('globeSpinOverlay').classList.add('hidden');
+
+                matchedPartner = SAMPLE_WORLD_PARTNERS[Math.floor(Math.random() * SAMPLE_WORLD_PARTNERS.length)];
+                gActiveArc = { lat: matchedPartner.lat, lon: matchedPartner.lon };
+
+                document.getElementById('matchUserAvatar').innerText = matchedPartner.avatar;
+                document.getElementById('matchUserName').innerText = matchedPartner.name;
+                document.getElementById('matchUserCountry').innerText = matchedPartner.country;
+                document.getElementById('matchResultBox').classList.remove('hidden');
+
+                confetti({ particleCount: 80, spread: 70 });
+                showToast(`تم التوافق المباشر مع شريك من ${matchedPartner.country}! 🎉`);
+            }, 2600);
+        }
+
+        function adjustSessionTime(delta) {
+            sessionMinutes = Math.max(5, Math.min(120, sessionMinutes + delta));
+            document.getElementById('selectedSessionTime').innerText = `${sessionMinutes}:00`;
+        }
+
+        function setSessionTimePreset(mins) {
+            sessionMinutes = mins;
+            document.getElementById('selectedSessionTime').innerText = `${sessionMinutes}:00`;
+        }
+
+        function startMatchedFocusSession() {
+            if (!matchedPartner) return;
+
+            document.getElementById('matchResultBox').classList.add('hidden');
+            document.getElementById('activePartnerHandle').innerText = matchedPartner.name;
+            document.getElementById('liveSessionOverlay').classList.remove('hidden');
+
+            activeSessionSeconds = sessionMinutes * 60;
+            updateSessionDisplay();
+
+            clearInterval(sessionTimerInterval);
+            sessionTimerInterval = setInterval(() => {
+                if (activeSessionSeconds > 0) {
+                    activeSessionSeconds--;
+                    updateSessionDisplay();
+                } else {
+                    clearInterval(sessionTimerInterval);
+                    confetti({ particleCount: 120, spread: 90 });
+                    showToast('كفووو! أكملت جلسة المذاكرة بنجاح 🏆');
+                    document.getElementById('liveSessionOverlay').classList.add('hidden');
+                }
+            }, 1000);
+
+            showToast(`بدأت الجلسة الآن مع ${matchedPartner.name}! ذاكر بتركيز 🚀`);
+        }
+
+        function updateSessionDisplay() {
+            const mins = Math.floor(activeSessionSeconds / 60).toString().padStart(2, '0');
+            const secs = (activeSessionSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('activeSessionCountdown').innerText = `${mins}:${secs}`;
+        }
+
+        function sendPartnerReaction(emoji) {
+            showToast(`أرسلت ${emoji} لشريكك المباشر!`);
+            confetti({ particleCount: 20, spread: 40 });
+        }
+
+        function openEndSessionConfirmModal() { document.getElementById('endSessionConfirmModal').classList.remove('hidden'); }
+        function closeEndSessionConfirmModal() { document.getElementById('endSessionConfirmModal').classList.add('hidden'); }
+
+        function confirmEndSession() {
+            clearInterval(sessionTimerInterval);
+            closeEndSessionConfirmModal();
+            document.getElementById('liveSessionOverlay').classList.add('hidden');
+            showToast('تم إنهاء الجلسة', 'info');
+        }
+
+        /* ----------------------------------------------------
+         * WHITEBOARD & FILE ANNOTATION ENGINE
+         * Fixed iPad Pointer Support & Image Export
+         * ---------------------------------------------------- */
+        let wCanvas, wCtx;
+        let isDrawing = false;
+        let activeTool = 'pen'; // 'pen', 'highlighter', 'eraser'
+        let currentColor = '#38bdf8';
+        let currentLineWidth = 5;
+        let uploadedBgImage = null;
+        let strokeHistory = [];
+
+        function initWhiteboardCanvas() {
+            wCanvas = document.getElementById('whiteboardCanvas');
+            if (!wCanvas) return;
+            wCtx = wCanvas.getContext('2d');
+
+            resizeWhiteboardCanvas();
+
+            // Pointer Events for iPad & Apple Pencil
+            wCanvas.addEventListener('pointerdown', handlePointerDown);
+            wCanvas.addEventListener('pointermove', handlePointerMove);
+            wCanvas.addEventListener('pointerup', handlePointerUp);
+            wCanvas.addEventListener('pointercancel', handlePointerUp);
+        }
+
+        function resizeWhiteboardCanvas() {
+            if (!wCanvas) return;
+            const container = document.getElementById('canvasContainer');
+            if (!container) return;
+
+            // Save contents before resize
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = wCanvas.width;
+            tempCanvas.height = wCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            if (wCanvas.width > 0 && wCanvas.height > 0) {
+                tempCtx.drawImage(wCanvas, 0, 0);
+            }
+
+            wCanvas.width = container.clientWidth;
+            wCanvas.height = container.clientHeight;
+
+            redrawWhiteboard(tempCanvas);
+        }
+
+        function redrawWhiteboard(oldTempCanvas = null) {
+            wCtx.clearRect(0, 0, wCanvas.width, wCanvas.height);
+
+            // Draw Background Uploaded Image if exists
+            if (uploadedBgImage) {
+                const hRatio = wCanvas.width / uploadedBgImage.width;
+                const vRatio = wCanvas.height / uploadedBgImage.height;
+                const ratio = Math.min(hRatio, vRatio);
+                const centerShiftX = (wCanvas.width - uploadedBgImage.width * ratio) / 2;
+                const centerShiftY = (wCanvas.height - uploadedBgImage.height * ratio) / 2;
+                wCtx.drawImage(uploadedBgImage, 0, 0, uploadedBgImage.width, uploadedBgImage.height, centerShiftX, centerShiftY, uploadedBgImage.width * ratio, uploadedBgImage.height * ratio);
+            }
+
+            if (oldTempCanvas && oldTempCanvas.width > 0) {
+                wCtx.drawImage(oldTempCanvas, 0, 0);
+            }
+        }
+
+        function getCanvasPointerPos(e) {
+            const rect = wCanvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function handlePointerDown(e) {
+            isDrawing = true;
+            wCanvas.setPointerCapture(e.pointerId);
+            document.getElementById('canvasEmptyState')?.classList.add('hidden');
+
+            // Save state for undo
+            if (strokeHistory.length > 15) strokeHistory.shift();
+            strokeHistory.push(wCtx.getImageData(0, 0, wCanvas.width, wCanvas.height));
+
+            const pos = getCanvasPointerPos(e);
+            wCtx.beginPath();
+            wCtx.moveTo(pos.x, pos.y);
+
+            applyToolContext();
+        }
+
+        function handlePointerMove(e) {
+            if (!isDrawing) return;
+            const pos = getCanvasPointerPos(e);
+            applyToolContext();
+            wCtx.lineTo(pos.x, pos.y);
+            wCtx.stroke();
+        }
+
+        function handlePointerUp(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+            wCtx.closePath();
+        }
+
+        function applyToolContext() {
+            wCtx.lineCap = 'round';
+            wCtx.lineJoin = 'round';
+
+            if (activeTool === 'pen') {
+                wCtx.globalAlpha = 1.0;
+                wCtx.strokeStyle = currentColor;
+                wCtx.lineWidth = currentLineWidth;
+            } else if (activeTool === 'highlighter') {
+                wCtx.globalAlpha = 0.35;
+                wCtx.strokeStyle = currentColor;
+                wCtx.lineWidth = currentLineWidth * 3;
+            } else if (activeTool === 'eraser') {
+                wCtx.globalAlpha = 1.0;
+                wCtx.strokeStyle = '#020617';
+                wCtx.lineWidth = 30;
+            }
+        }
+
+        function setTool(tool) {
+            activeTool = tool;
+            document.getElementById('toolPenBtn').className = tool === 'pen' ? 'px-3 py-1 bg-brand-600 text-white text-xs font-bold rounded-xl shadow' : 'px-3 py-1 bg-slate-800 text-xs font-bold text-slate-300 rounded-xl border border-slate-700';
+            document.getElementById('toolHighlighterBtn').className = tool === 'highlighter' ? 'px-3 py-1 bg-brand-600 text-white text-xs font-bold rounded-xl shadow' : 'px-3 py-1 bg-slate-800 text-xs font-bold text-slate-300 rounded-xl border border-slate-700';
+            document.getElementById('toolEraserBtn').className = tool === 'eraser' ? 'px-3 py-1 bg-brand-600 text-white text-xs font-bold rounded-xl shadow' : 'px-3 py-1 bg-slate-800 text-xs font-bold text-slate-300 rounded-xl border border-slate-700';
+        }
+
+        function setCanvasColor(color) {
+            currentColor = color;
+            if (activeTool === 'eraser') setTool('pen');
+        }
+
+        function setCanvasLineWidth(val) { currentLineWidth = parseInt(val); }
+
+        function undoCanvas() {
+            if (strokeHistory.length > 0) {
+                const previousState = strokeHistory.pop();
+                wCtx.putImageData(previousState, 0, 0);
+            }
+        }
+
+        function clearCanvas() {
+            strokeHistory = [];
+            uploadedBgImage = null;
+            wCtx.clearRect(0, 0, wCanvas.width, wCanvas.height);
+            document.getElementById('canvasEmptyState')?.classList.remove('hidden');
+            showToast('تم مسح السبورة');
+        }
+
+        /* File Upload Handler */
+        function handleBoardFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    uploadedBgImage = img;
+                    document.getElementById('canvasEmptyState')?.classList.add('hidden');
+                    redrawWhiteboard();
+                    showToast('تم رفع الصورة على السبورة! يمديك تشرح وتكتب فوقها الآن 🎨');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* Reliable Image Export (iPad Supported) */
+        function downloadCanvas() {
+            try {
+                const dataURL = wCanvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `modawin-board-${Date.now()}.png`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('تم حفظ تصدير الصورة بنجاح! 💾');
+            } catch (err) {
+                window.open(wCanvas.toDataURL('image/png'), '_blank');
+                showToast('تم فتح الصورة لتنزيلها!');
+            }
+        }
+
+        /* ----------------------------------------------------
+         * EXAM COUNTDOWNS
+         * ---------------------------------------------------- */
+        function renderExamsList() {
+            const container = document.getElementById('examsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const today = new Date();
+
+            customExams.forEach(exam => {
+                const examDate = new Date(exam.date);
+                const diffTime = examDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-3xl p-6 space-y-4 relative';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold flex items-center gap-2">
+                            <i class="fa-solid ${exam.icon || 'fa-calendar'} ${exam.color || 'text-brand-500'}"></i>
+                            <span>${exam.title}</span>
+                        </span>
+                        <span class="text-[10px] opacity-70 font-mono">${exam.date}</span>
+                    </div>
+                    <div class="text-center py-4 bg-slate-950/40 rounded-2xl border" style="border-color: var(--border-main);">
+                        <div class="text-4xl font-black text-amber-500 font-mono">${diffDays > 0 ? diffDays : 0}</div>
+                        <div class="text-[11px] opacity-70 mt-1">${diffDays > 0 ? 'يوماً متبقياً ⏳' : 'حان الموعد أو انتهى!'}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAddCustomExamModal() { document.getElementById('addCustomExamModal').classList.remove('hidden'); }
+        function closeAddCustomExamModal() { document.getElementById('addCustomExamModal').classList.add('hidden'); }
+
+        function handleCustomExamSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('customExamTitle').value.trim();
+            const date = document.getElementById('customExamDate').value;
+
+            customExams.unshift({
+                id: Date.now(),
+                title,
+                date,
+                icon: 'fa-star',
+                color: 'text-amber-500'
+            });
+
+            saveState();
+            closeAddCustomExamModal();
+            renderExamsList();
+            showToast('تم إضافة موعد الاختبار الخاص!');
+        }
+
+        /* ----------------------------------------------------
+         * ERROR NOTEBOOK LOGIC
+         * ---------------------------------------------------- */
+        function renderErrorLogs() {
+            const container = document.getElementById('errorLogsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let filtered = errorLogs;
+            if (currentErrorFilter !== 'all') {
+                filtered = errorLogs.filter(e => e.track === currentErrorFilter);
+            }
+
+            document.getElementById('countAllErrors').innerText = errorLogs.length;
+
+            filtered.forEach(log => {
+                const card = document.createElement('div');
+                const isMastered = log.status === 'mastered';
+                card.className = `glass-card rounded-2xl p-5 space-y-3 border ${isMastered ? 'border-emerald-500/30' : ''}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-brand-500/20 text-brand-500">${log.track}</span>
+                        <span class="text-[10px] opacity-75">${log.reason}</span>
+                    </div>
+                    <h4 class="text-xs font-bold">❓ ${log.question}</h4>
+                    <div class="p-3 rounded-xl bg-slate-950/40 text-xs text-emerald-400 border" style="border-color: var(--border-main);">
+                        <span class="text-[10px] opacity-70 block mb-1">💡 الحل والقانون الصحيح:</span>
+                        <p class="font-medium">${log.solution}</p>
+                    </div>
+                    <div class="pt-1 flex items-center justify-between">
+                        <button onclick="toggleErrorStatus(${log.id})" class="px-3 py-1 rounded-lg text-[10px] font-bold ${isMastered ? 'bg-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}">
+                            ${isMastered ? 'تم الإتقان 💯' : 'في قائمة المراجعة ⏳'}
+                        </button>
+                        <button onclick="deleteErrorLog(${log.id})" class="opacity-50 hover:opacity-100 hover:text-rose-500 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterErrors(cat) {
+            currentErrorFilter = cat;
+            document.querySelectorAll('.error-filter-btn').forEach(btn => {
+                btn.className = btn.dataset.filter === cat ?
+                    'error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-600 text-white' :
+                    'error-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card opacity-80';
+            });
+            renderErrorLogs();
+        }
+
+        function toggleErrorStatus(id) {
+            errorLogs = errorLogs.map(e => e.id === id ? { ...e, status: e.status === 'mastered' ? 'pending' : 'mastered' } : e);
+            saveState();
+            renderErrorLogs();
+        }
+
+        function deleteErrorLog(id) {
+            errorLogs = errorLogs.filter(e => e.id !== id);
+            saveState();
+            renderErrorLogs();
+        }
+
+        function openAddErrorModal() { document.getElementById('addErrorModal').classList.remove('hidden'); }
+        function closeAddErrorModal() { document.getElementById('addErrorModal').classList.add('hidden'); }
+
+        function handleAddErrorLog(e) {
+            e.preventDefault();
+            const track = document.getElementById('errorTrack').value;
+            const reason = document.getElementById('errorReason').value;
+            const question = document.getElementById('errorQuestion').value.trim();
+            const solution = document.getElementById('errorSolution').value.trim();
+
+            errorLogs.unshift({ id: Date.now(), track, reason, question, solution, status: 'pending' });
+            saveState();
+            closeAddErrorModal();
+            renderErrorLogs();
+            showToast('تم إضافة السؤال لدفترك الذكي!');
+        }
+
+        /* ----------------------------------------------------
+         * WEEKLY PLANNER LOGIC
+         * ---------------------------------------------------- */
+        function renderWeeklyPlanner() {
+            const container = document.getElementById('weeklyPlannerGrid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            days.forEach((day, idx) => {
+                const dayCard = document.createElement('div');
+                dayCard.className = 'glass-card rounded-2xl p-4 space-y-2 border';
+                dayCard.style.borderColor = 'var(--border-main)';
+                dayCard.innerHTML = `
+                    <div class="text-xs font-black text-brand-500 pb-1 border-b" style="border-color: var(--border-main);">${day}</div>
+                    <div class="space-y-1.5 min-h-[100px]" id="plannerDay_${idx}">
+                        <div class="p-2 rounded-xl bg-slate-950/30 text-[11px] font-medium border" style="border-color: var(--border-main);">
+                            📖 حل 30 سؤال كمي
+                        </div>
+                    </div>
+                `;
+                container.appendChild(dayCard);
+            });
+        }
+
+        function addNewScheduleTask() {
+            const task = prompt('أدخل المهمة الدراسية الجديدة:');
+            if (task) {
+                const day0 = document.getElementById('plannerDay_0');
+                if (day0) {
+                    const item = document.createElement('div');
+                    item.className = 'p-2 rounded-xl bg-slate-950/30 text-[11px] font-medium border';
+                    item.style.borderColor = 'var(--border-main)';
+                    item.innerText = `✍️ ${task}`;
+                    day0.appendChild(item);
+                }
+                showToast('تم إضافة المهمة للجدول الأسبوعي!');
+            }
+        }
+
+        /* ----------------------------------------------------
+         * PROCRASTINATION BUSTERS (5-MIN & POMODORO)
+         * ---------------------------------------------------- */
+        function toggleFiveMinuteTimer() {
+            const btn = document.getElementById('btnFiveMin');
+            if (fiveMinInterval) {
+                clearInterval(fiveMinInterval);
+                fiveMinInterval = null;
+                btn.innerText = 'استئناف تحدي الـ 5 دقائق 🔥';
+            } else {
+                fiveMinInterval = setInterval(() => {
+                    if (fiveMinSeconds > 0) {
+                        fiveMinSeconds--;
+                        const m = Math.floor(fiveMinSeconds / 60).toString().padStart(2, '0');
+                        const s = (fiveMinSeconds % 60).toString().padStart(2, '0');
+                        document.getElementById('fiveMinCountdown').innerText = `${m}:${s}`;
+                    } else {
+                        clearInterval(fiveMinInterval);
+                        confetti({ particleCount: 80, spread: 70 });
+                        showToast('انتهت الـ 5 دقائق! انقشع الكسل وتستطيع الاستمرار بحماس الآن 💪');
+                    }
+                }, 1000);
+                btn.innerText = 'إيقاف مؤقت ⏸️';
+            }
+        }
+
+        function togglePomodoroTimer() {
+            const btn = document.getElementById('btnPomodoro');
+            if (pomodoroInterval) {
+                clearInterval(pomodoroInterval);
+                pomodoroInterval = null;
+                btn.innerText = 'مواصلة التركيز';
+            } else {
+                pomodoroInterval = setInterval(() => {
+                    if (pomodoroSeconds > 0) {
+                        pomodoroSeconds--;
+                        const m = Math.floor(pomodoroSeconds / 60).toString().padStart(2, '0');
+                        const s = (pomodoroSeconds % 60).toString().padStart(2, '0');
+                        document.getElementById('pomodoroCountdown').innerText = `${m}:${s}`;
+                    } else {
+                        clearInterval(pomodoroInterval);
+                        confetti({ particleCount: 100, spread: 80 });
+                        showToast('انتهت الـ 25 دقيقة! خذ استراحة 5 دقائق ☕');
+                    }
+                }, 1000);
+                btn.innerText = 'إيقاف مؤقت ⏸️';
+            }
+        }
+
+        function resetPomodoroTimer() {
+            clearInterval(pomodoroInterval);
+            pomodoroInterval = null;
+            pomodoroSeconds = 1500;
+            document.getElementById('pomodoroCountdown').innerText = '25:00';
+            document.getElementById('btnPomodoro').innerText = 'ابدأ مؤقت البومودورو';
+        }
+
+        /* ----------------------------------------------------
+         * EXECUTIVE ADMIN DASHBOARD
+         * ---------------------------------------------------- */
+        function renderAdminDashboard() {
+            const total = studentsDB.length;
+            const paid = studentsDB.filter(s => s.status === 'paid').length;
+            const revenue = paid * 29.99;
+
+            document.getElementById('statTotalUsers').innerText = total;
+            document.getElementById('statPaidSubscribers').innerText = paid;
+            document.getElementById('statTotalRevenue').innerText = revenue.toFixed(2);
+
+            renderAdminStudentsTable();
+            renderAffiliatesList();
+        }
+
+        function renderAdminStudentsTable() {
+            const body = document.getElementById('adminStudentsTableBody');
+            const search = document.getElementById('adminSearchInput').value.trim().toLowerCase();
+            const statusFilter = document.getElementById('adminStatusFilter').value;
+
+            body.innerHTML = '';
+
+            let filtered = studentsDB.filter(s => {
+                const matchesSearch = s.name.toLowerCase().includes(search) || s.phone.includes(search) || (s.email && s.email.toLowerCase().includes(search));
+                const matchesStatus = statusFilter === 'all' ? true : (statusFilter === 'paid' ? s.status === 'paid' : s.status === 'free');
+                return matchesSearch && matchesStatus;
+            });
+
+            filtered.forEach(s => {
+                const cleanPhone = s.phone.replace(/^0/, '');
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-900/40 transition';
+                row.innerHTML = `
+                    <td class="p-3.5 font-bold">${s.name}</td>
+                    <td class="p-3.5 opacity-70 font-mono">${s.email || '-'}</td>
+                    <td class="p-3.5">
+                        <a href="https://wa.me/966${cleanPhone}" target="_blank" class="text-emerald-500 font-mono hover:underline flex items-center gap-1 font-bold">
+                            <i class="fa-brands fa-whatsapp text-emerald-500"></i>
+                            <span>${s.phone}</span>
+                        </a>
+                    </td>
+                    <td class="p-3.5 opacity-80">${s.track}</td>
+                    <td class="p-3.5">
+                        <span class="px-2.5 py-0.5 rounded text-[10px] font-bold ${s.status === 'paid' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-slate-800 text-slate-400'}">
+                            ${s.status === 'paid' ? 'مشترك (29.99 ر.س)' : 'مجاني'}
+                        </span>
+                    </td>
+                    <td class="p-3.5 opacity-70 font-mono">${s.date}</td>
+                    <td class="p-3.5 text-center">
+                        <button onclick="deleteStudent(${s.id})" class="opacity-50 hover:opacity-100 hover:text-rose-500 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        function deleteStudent(id) {
+            if (confirm('تأكيد حذف بيانات الطالب؟')) {
+                studentsDB = studentsDB.filter(s => s.id !== id);
+                saveState();
+                renderAdminDashboard();
+                showToast('تم الحذف', 'warning');
+            }
+        }
+
+        function renderAffiliatesList() {
+            const container = document.getElementById('affiliatesContainer');
+            container.innerHTML = '';
+            affiliatesList.forEach(aff => {
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-2xl p-4 space-y-1';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-xs">${aff.name}</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 font-mono text-[11px]">${aff.code}</span>
+                    </div>
+                    <p class="text-xs opacity-75">عدد المشتركين عبر الكود: <strong class="text-emerald-500 font-bold">${aff.sales}</strong></p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addNewAffiliateCode() {
+            const name = prompt('اسم المسوق/الحملة:');
+            const code = prompt('الكود المقترح:');
+            if (name && code) {
+                affiliatesList.push({ code: code.toUpperCase(), name, sales: 0 });
+                saveState();
+                renderAffiliatesList();
+                showToast('تم إضافة كود المسوق!');
+            }
+        }
+
+        function exportToCSV() {
+            let csv = "data:text/csv;charset=utf-8,\uFEFFالاسم,البريد,الجوال,المسار,الحالة,التاريخ\n";
+            studentsDB.forEach(s => {
+                csv += `"${s.name}","${s.email || ''}","${s.phone}","${s.track}","${s.status}","${s.date}"\n`;
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `modawin-students-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            showToast('تم تصدير ملف المشتركين CSV 📊');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `p-3.5 rounded-2xl border shadow-2xl text-xs font-bold flex items-center gap-2 pointer-events-auto bg-slate-900 border-brand-500/40 text-brand-300`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+</body>
+</html>
