@@ -1109,6 +1109,11 @@
             e.preventDefault();
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!email || !emailRegex.test(email)) {
+      showToast('الرجاء إدخال بريد إلكتروني صحيح (مثال: name@gmail.com)', 'error');
+      return;
+    }
             const phone = document.getElementById('regPhone').value.trim();
             const track = document.getElementById('regTrack').value;
             const promo = document.getElementById('regPromo').value.trim().toUpperCase() || '-';
@@ -1125,6 +1130,15 @@
             };
 
             studentsDB.unshift(newStudent);
+            if (typeof saveStudentToSupabase === 'function') {
+      saveStudentToSupabase({
+        name: newStudent.name,
+        email: newStudent.email,
+        phone: newStudent.phone,
+        track: newStudent.track,
+        status: newStudent.status
+      });
+    }
             if (promo !== '-') {
                 affiliatesList = affiliatesList.map(a => a.code === promo ? { ...a, sales: a.sales + 1 } : a);
             }
