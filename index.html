@@ -2002,5 +2002,37 @@
             setTimeout(() => toast.remove(), 3500);
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://aedryevjbajzjcbyqeqx.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_SI8RWTzPUipe5wwSOJGvmw_QjzcAFS0";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function saveStudentToSupabase(studentData) {
+    const { data, error } = await supabaseClient
+      .from("students")
+      .insert([studentData])
+      .select();
+
+    if (error) {
+      console.error("خطأ أثناء الحفظ في Supabase:", error);
+      return null;
+    }
+    return data;
+  }
+
+  async function loadStudentsFromSupabase() {
+    const { data, error } = await supabaseClient
+      .from("students")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("خطأ أثناء جلب الطلاب من Supabase:", error);
+      return [];
+    }
+    return data || [];
+  }
+</script>
 </body>
 </html>
